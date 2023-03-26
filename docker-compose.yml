@@ -1,34 +1,11 @@
 version: "3.9"
 services:
-  postgres_keycloak_demo:
-    image: postgres:14.2
-    command: postgres -c 'max-connections=200'
-    volumes:
-      - pgdata_keycloak_demo:/var/lib/postgresql/data
-    env_file:
-      - ./environnement/dev/database.env
-    healthcheck:
-      test: "exit 0"
+  sonarqube:
+    image: sonarqube
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
     ports:
-      - "5436:5432"
-    networks:
-      - keycload_demo_dev_network
+      - "9000:9000"
 
-  keycloak_demo:
-    image: quay.io/keycloak/keycloak:20.0.0
-    command: start-dev
-    env_file:
-      - ./environnement/dev/keycloak.env
-    depends_on:
-      postgres_keycloak_demo:
-        condition: service_healthy
-    ports:
-      - "8890:8080"
-    networks:
-      - keycload_demo_dev_network
-
-networks:
-  keycload_demo_dev_network:
-    driver: bridge
-volumes:
-  pgdata_keycloak_demo:
+# squ_cbb4e28f2c0058162d5a06e3a2b1ab8e112fcbe5
+#admin / password
