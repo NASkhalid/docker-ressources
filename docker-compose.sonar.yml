@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  sonarqube:
+    image: sonarqube
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    ports:
+      - "9000:9000"
+
+# squ_cbb4e28f2c0058162d5a06e3a2b1ab8e112fcbe5
+#admin / password

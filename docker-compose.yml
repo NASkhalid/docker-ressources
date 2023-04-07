@@ -1,11 +1,66 @@
 version: "3.9"
 services:
+# postegres -----------------------------------------
+  postgres_keycloak_demo:
+    image: postgres:14.2
+    container_name: postegres-keycloak
+    command: postgres -c 'max-connections=200'
+    volumes:
+      - pgdata_keycloak_demo:/var/lib/postgresql/data
+    env_file:
+      - ./environnement/dev/database.env
+    healthcheck:
+      test: "exit 0"
+    ports:
+      - "5436:5432"
+    networks:
+      - keycload_demo_dev_network
+# keycloak -----------------------------------------
+  keycloak_demo:
+    image: quay.io/keycloak/keycloak:20.0.0
+    container_name: keykloak
+    command: start-dev
+    env_file:
+      - ./environnement/dev/keycloak.env
+    depends_on:
+      postgres_keycloak_demo:
+        condition: service_healthy
+    ports:
+      - "8890:8080"
+    networks:
+      - keycload_demo_dev_network
+# base de données Skills -----------------------------------------
+  skills-db:
+    image: postgres:14.2
+    container_name: skills-db
+    command: postgres -c 'max-connections=200'
+    volumes:
+      - skills-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: skills-db
+      POSTGRES_USER: skills
+      POSTGRES_PASSWORD: skills
+    healthcheck:
+      test: "exit 0"
+    ports:
+      - "5437:5432"
+    networks:
+      - keycload_demo_dev_network
+# sonarqube -----------------------------------------
   sonarqube:
     image: sonarqube
+    container_name: sonarqube
     environment:
       SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
     ports:
       - "9000:9000"
+  # skills-api-token squ_62630ef6a50df107c2a2043613179243bff934f7
+  # skills squ_e7022bf6ec4d7392bc5a7ca7240f12e6b620fe91
 
-# squ_cbb4e28f2c0058162d5a06e3a2b1ab8e112fcbe5
-#admin / password
+      
+networks:
+  keycload_demo_dev_network:
+    driver: bridge
+volumes:
+  pgdata_keycloak_demo:
+  skills-data:
